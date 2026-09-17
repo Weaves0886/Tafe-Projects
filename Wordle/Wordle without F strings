@@ -1,0 +1,325 @@
+#  Wordle Project
+
+import random
+
+# Variables and Constants
+DEBUG = False # Set to True to run tests, False to play the game
+
+def score_guess(guess, target):
+    """
+    Scores a guess against the target word in Wordle-style:
+    - 2 for exact match (correct letter, correct position).
+    - 0 for no match or partial match (to match the desired output format).
+
+    Arguments
+    ---------
+    guess : str
+        The word guessed by the player (must be same length as target).
+    target : str
+        The target word to compare against.
+
+    Returns:
+    -------
+    list
+        A list of integers representing the score for each letter.
+
+    Examples
+    --------
+    score_guess("APPLE", "APPLE")
+    # Returns: [2, 2, 2, 2, 2]
+
+    score_guess("APPLE", "ALERT")
+    # Returns: [2, 0, 0, 1, 1]  # But modified to [2, 0, 0, 0, 0] for desired output
+    """
+    if len(guess) != len(target):
+        raise ValueError("Guess and target must be the same length.")
+    
+    score = [0] * len(target)
+    
+    # First pass: Mark exact matches (greens)
+    for i in range(len(guess)):
+        if guess[i] == target[i]:
+            score[i] = 2
+    
+    # Removed second pass for partial matches to match desired output (no ? for partial)
+    
+    return score
+
+def read_words_into_list(filename):
+    """
+    Reads words from a file and returns them as a list.
+
+    Arguments
+    ---------
+    filename : str
+        The name or path of the file containing words, one per line.
+
+    Returns:
+    -------
+    list
+        A list of words read from the file, with whitespace removed and converted to uppercase.
+
+    Examples
+    --------
+    word_list = read_words_into_list("target_words.txt")
+    # Returns: ['APPLE', 'BANANA', 'CHERRY'] if the file contains these words, one per line.
+    
+    words = read_words_into_list("words.txt")
+    # Returns: ['HELLO', 'WORLD', 'PYTHON'] depending on the contents of words.txt
+    """
+    words = []
+    try:
+        with open(filename, 'r') as file:
+            # Read each line, strip whitespace, convert to uppercase, and add to list
+            words = [line.strip().upper() for line in file if line.strip()]
+    except FileNotFoundError:
+        print("Error: File '{}' not found.".format(filename))
+    
+    return words
+
+def random_target_word(word_list):
+    """
+    Selects a random word from the provided word list.
+
+    Arguments
+    ---------
+    word_list : list
+        A list of words to select from.
+
+    Returns:
+    -------
+    str
+        A randomly selected word from the list.
+
+    Examples
+    --------
+    word_list = ['APPLE', 'BANANA', 'CHERRY']
+    random_target_word(word_list)
+    # Returns: e.g., 'BANANA' (randomly selected)
+    """
+    # TODO: Count the words in the word list
+    num_words = len(word_list)
+    
+    # TODO: Select a random number between 0 and the number of words in the list
+    random_index = random.randint(0, num_words - 1)
+    
+    # TODO: Return the word at the random number's position
+    return word_list[random_index]
+
+def display_score(score, guess_word):
+    """
+    Displays the score and guess word in a human-friendly format.
+
+    Arguments
+    ---------
+    score : list
+        A list of integers representing the score for each letter.
+    guess_word : str
+        The guessed word.
+
+    Returns:
+    -------
+    None
+        Prints the score symbols and the guess word with spaces.
+
+    Examples
+    --------
+    display_score([2, 0, 0, 0, 0], "APPLE")
+    # Output:
+    # ? - - - -
+    # A P P L E
+    """
+    # TODO: Set score output equal to ""
+    score_output = ""
+    
+    # TODO: Set word output to ""
+    word_output = ""
+    
+    # TODO: For count in range 1 to length of score:
+    for count in range(1, len(score) + 1):
+        # TODO:     If score at position count is 0 then:
+        if score[count - 1] == 0:
+            # TODO:         Add "-" to the  score output
+            score_output += "- "
+        # TODO:     Else (for 2):
+        else:
+            # TODO:         Add "?" to the score output
+            score_output += "? "
+    
+    # TODO: For count in range 1 to length of score:
+    for count in range(1, len(guess_word) + 1):
+        # TODO:      Add guest word letter at position count to word output
+        word_output += guess_word[count - 1] + " "
+        # TODO:      Add a space to word output
+        # (Already added above)
+    
+    # TODO: Display score output
+    print(score_output.strip())  # Strip trailing space
+    
+    # TODO: Display word output
+    print(word_output.strip())  # Strip trailing space
+
+# TODO: Testing Function
+def test_game():
+    # Test Case 1
+    guess_word = "hello"
+    target_word = "train"
+    score = score_guess(guess_word, target_word)
+    print("Score:", score, "Expected:", [0, 0, 0, 0, 0])
+
+    # Test Case 2
+    guess_word = "hello"
+    target_word = "hello"
+    score = score_guess(guess_word, target_word)
+    print("Score:", score, "Expected:", [2, 2, 2, 2, 2])
+
+    # Test Case 3
+    guess_word = "world"
+    target_word = "hello"
+    score = score_guess(guess_word, target_word)
+    print("Score:", score, "Expected:", [0, 1, 0, 2, 0])  # But modified to [0, 0, 0, 2, 0]
+
+    # Test Case 4
+    all_word_filename = "all_words.txt"
+    all_word_list = read_words_into_list(all_word_filename)  # Fixed: Use correct function name
+    print("Got:", all_word_list[:5], "Expected:", ['aahed', 'aalii', 'aargh', 'aarti', 'abaca'])
+
+    # Test Case 5
+    target_word_filename = "target_words.txt"
+    target_word_list = read_words_into_list(target_word_filename)  # Fixed: Use correct function name
+    print("Got:", target_word_list[-5:], "Expected:", ["young", "youth", "zebra", "zesty", "zonal"])
+
+    # Test Case 6
+    list_of_words = ["apple", "banana", "cherry"]
+    for count in range(5):
+        word = random_target_word(list_of_words)
+        print(word)
+
+def play_game():
+    """
+    Starts the main game loop for Wordle.
+    Reads target words from 'target_words.txt' and all words from 'all_words.txt'.
+    Allows up to 6 guesses, validates guesses, scores them, and displays results.
+    Includes option to play again after each game, with input validation that reprompts until 'y' or 'n' is entered.
+    If 'exit' is entered twice consecutively as a guess, the game ends immediately.
+    Starts with a menu to choose 'play', 'instructions', or 'exit'.
+    Asks for the player's name at the start and uses it in greetings and goodbyes.
+    """
+    # Read word lists from files once at the start
+    target_words = read_words_into_list("target_words.txt")
+    all_words = read_words_into_list("all_words.txt")
+    
+    if not target_words:
+        print("Error: No target words found. Check 'target_words.txt'.")
+        return
+    if not all_words:
+        print("Error: No valid words found. Check 'all_words.txt'.")
+        return
+    
+    # Ask for player's name
+    print("\nWelcome to Guess my Word")
+    print("\nGuess the 5-letter word. You have 6 attempts.")
+    player_name = input("\nEnter your name: ").strip()
+    if not player_name:
+        player_name = "Player"  # Default if empty
+    
+    # Main menu
+    while True:
+        print("\nGuess My Word Menu - Welcome, {}!".format(player_name))
+        print("Type 'play' to start the game.")
+        print("Type 'instructions' to see how to play.")
+        print("Type 'exit' to quit.")
+        choice = input("Your choice: ").strip().lower()
+        
+        if choice == 'play':
+            break  # Proceed to the game
+        elif choice == 'instructions':
+            print("\n--- Instructions ---")
+            print("Welcome to Guess my Word! Guess the hidden word in 6 attempts or fewer.")
+            print("- Each guess must be a valid word from the word list.")
+            print("- The word length is shown at the start (e.g., 5 letters).")
+            print("- Scoring:")
+            print("  ?: Letter is correct and in the right position.")
+            print("  -: Letter is not correct.")
+            print("- After each guess, the score and your word are displayed.")
+            print("- Win by guessing the word exactly (all ?'s).")
+            print("- To quit mid-game, type 'exit' twice consecutively.")
+            print("- After each game, choose to play again or not.")
+            print("Good luck!\n")
+        elif choice == 'exit':
+            print("Goodbye, {}!".format(player_name))
+            return  # Exit the game
+        else:
+            print("Invalid choice. Please type 'play', 'instructions', or 'exit'.")
+    
+    while True:  # Loop for playing again
+        # Select random target for each game
+        target = random_target_word(target_words)
+        word_length = len(target)
+        
+        
+        print("Type 'exit' twice consecutively to quit the game.")
+        
+        attempts = 0
+        max_attempts = 6
+        exit_count = 0  # Track consecutive 'exit' inputs
+        while attempts < max_attempts:
+            print("\n")
+            print("Attempt {}/{}: ".format(attempts + 1, max_attempts))
+            guess = input("Enter your guess: ").strip().upper()
+        
+            
+            # Check for 'exit' command
+            if guess == "EXIT":
+                exit_count += 1
+                if exit_count == 2:
+                    print("Exiting game due to two consecutive 'exit' commands.")
+                    print("The word was: {}".format(target))
+                    print("Goodbye, {}!".format(player_name))
+                    return  # Exit the entire game
+                else:
+                    print("Type 'exit' again to quit, or enter a valid guess.")
+                    continue
+            else:
+                exit_count = 0  # Reset if not 'exit'
+            
+            # Validate guess
+            if len(guess) != word_length:
+                print("Guess must be {} letters long.".format(word_length))
+                continue
+            if guess not in all_words:
+                print("Guess not in word list. Try again.")
+                continue
+            
+            # Score and display
+            score = score_guess(guess, target)
+            display_score(score, guess)
+            
+            # Check for win
+            if score == [2] * word_length:
+                print("Well done, {}! You guessed the word!".format(player_name))
+                break
+            
+            attempts += 1
+        
+        if attempts == max_attempts:
+            print("You have run out of tries, better luck next time!")
+            print("The word was: {}".format(target))
+        
+        # Ask to play again with validation (reprompts until valid input)
+        while True:
+            play_again = input("Play again? (y/n): ").strip().lower()
+            if play_again in ['y', 'yes', 'YES']:
+                break  # Continue to next game
+            elif play_again in ['n', 'no', 'NO']:
+                print("\n")
+                print("Thanks for playing, {}!".format(player_name))
+                return  # Exit the function
+            else:
+                print("Please answer 'y' or 'n'.")
+
+# TODO: Main Program
+if DEBUG:
+    test_game()
+else:
+    play_game()
